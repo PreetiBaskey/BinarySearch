@@ -1,0 +1,93 @@
+//approach - 1 - linear search - time limit exceeded error
+//time complexity - O(n * (sum - max))
+//space complexity = O(1)
+// class Solution {
+// public:
+//     int getDays(vector<int> &wt, int capacity) {
+//         int n = wt.size();
+
+//         int days = 1, load = 0;
+//         for(int i = 0; i < n; i++) {
+//             if(load + wt[i] > capacity) {
+//                 days = days + 1;
+//                 load = wt[i];
+//             }
+//             else {
+//                 load += wt[i];
+//             }
+//         }
+
+//         return days;
+//     }
+//     int shipWithinDays(vector<int>& weights, int days) {
+//         int n = weights.size();
+//         int maxEle = *max_element(begin(weights), end(weights));
+//         int sum = accumulate(begin(weights), end(weights), 0);
+
+//         for(int capacity = maxEle; capacity <= sum; capacity++) {
+//             int actualDaysNeeded = getDays(weights, capacity);
+//             if(actualDaysNeeded <= days) {
+//                 return capacity;
+//             }
+//         }
+
+//         return sum;
+//     }
+// };
+
+
+
+
+//approach - 2
+//time complexity - O(nlog(sum - max))
+//space complexity - O(1)
+class Solution {
+public:
+    // Helper function to calculate how many days are needed for a specific ship capacity
+    int getDays(vector<int> &wt, int capacity) {
+        int n = wt.size();
+        int days = 1, load = 0;
+
+        for(int i = 0; i < n; i++) {
+            // If adding the current package exceeds capacity, move to the next day
+            if(load + wt[i] > capacity) {
+                days = days + 1;
+                load = wt[i]; // Start new day with the current package
+            }
+            else {
+                load += wt[i]; // Add package to current day's load
+            }
+        }
+
+        return days;
+    }
+
+    int shipWithinDays(vector<int>& weights, int days) {
+        int n = weights.size();
+        
+        // Define the search range for Binary Search:
+        // Lower bound (low): Must be at least the heaviest package to ship it.
+        // Upper bound (high): Sum of all packages (shipping everything in 1 day).
+        int low = *max_element(begin(weights), end(weights));
+        int high = accumulate(begin(weights), end(weights), 0);
+
+        // Binary Search to find the minimum valid capacity
+        while(low <= high) {
+            int mid = low + (high - low) / 2; // Prevents potential integer overflow
+            
+            int actualDaysNeeded = getDays(weights, mid);
+            
+            // If we can ship within 'days', try a smaller capacity (look left)
+            if(actualDaysNeeded <= days) {
+                high = mid - 1;
+            }
+            // If it takes too many days, we need a larger capacity (look right)
+            else {
+                low = mid + 1;
+            }
+        }
+
+        // After the loop, 'low' will point to the smallest capacity that satisfies the condition
+        return low;
+    }
+};
