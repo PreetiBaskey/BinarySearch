@@ -1,0 +1,46 @@
+//approach - 1
+//time complexity - O(h * range)
+//space complexity - O(1)
+class Solution {
+public:
+    /**
+     * Helper function to check if a given eating speed (mid) allows finishing
+     * all banana piles within h hours.
+     * Logic: For each pile, hours needed = ceil(pile / mid).
+     */
+    bool isPossible(vector<int> &piles, int mid, int h) {
+        for(int &pile : piles) {
+            // Efficient way to compute ceiling(pile / mid) using integer math:
+            // (pile + mid - 1) / mid avoids floating point issues.
+            h -= (pile + mid - 1) / mid;
+            
+            // If hours remaining drop below zero, speed is too slow.
+            if(h < 0) return false;
+        }
+        return true;
+    }
+
+    int minEatingSpeed(vector<int>& piles, int h) {
+        // Binary search range for the answer (eating speed k):
+        // Lowest possible speed is 1; max speed is the largest pile size
+        // (since eating faster than the largest pile doesn't save more time).
+        int low = 1;
+        int high = *max_element(begin(piles), end(piles));
+        int result = high; // Default to max speed
+
+        while(low <= high) {
+            int mid = low + (high - low) / 2; // Prevents potential overflow
+
+            if(isPossible(piles, mid, h)) {
+                // If mid is feasible, try finding an even smaller valid speed
+                result = mid;
+                high = mid - 1;
+            } else {
+                // If mid is too slow, we must increase the speed
+                low = mid + 1;
+            }
+        }
+
+        return result;
+    }
+};
