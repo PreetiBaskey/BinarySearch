@@ -1,0 +1,50 @@
+//approach - 1 - binary search - binary search on answer
+//time complexity - O(n * log(range))
+//space complexity - O(1)
+class Solution {
+public:
+    // Helper to count how many bouquets of k adjacent flowers can be made by day 'mid'
+    int getBouqCount(vector<int> &bloomDay, int mid, int k) {
+        int bouqCount = 0;
+        int consecutiveDays = 0;
+        
+        for(int &day : bloomDay) {
+            // If flower blooms by 'mid', it can be part of a bouquet
+            if(day <= mid) {
+                consecutiveDays++;
+            } else {
+                consecutiveDays = 0; // Reset count if a flower hasn't bloomed yet
+            }
+
+            // Once we hit k adjacent flowers, form a bouquet and reset counter
+            if(consecutiveDays == k) {
+                bouqCount++;
+                consecutiveDays = 0;
+            }
+        }
+        return bouqCount;
+    }
+
+    int minDays(vector<int>& bloomDay, int m, int k) {
+        // Optimization: If total flowers needed exceeds garden size, it's impossible
+        if ((long long)m * k > bloomDay.size()) return -1;
+
+        int startDay = 0;
+        int endDay = *max_element(begin(bloomDay), end(bloomDay));
+        int minDay = -1;
+
+        // Binary Search on the "Answer Space" (days)
+        while(startDay <= endDay) {
+            int mid = startDay + (endDay - startDay) / 2;
+            
+            if(getBouqCount(bloomDay, mid, k) >= m) {
+                minDay = mid;      // Current day works, but try to find an earlier day
+                endDay = mid - 1;
+            } else {
+                startDay = mid + 1; // Not enough bouquets, need more time
+            }
+        }
+
+        return minDay;
+    }
+};
