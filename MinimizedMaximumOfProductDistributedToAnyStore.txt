@@ -1,0 +1,36 @@
+//appraoch - 1
+//time complexity - O(m * log(range))
+//space complexity - O(1)
+class Solution {
+public:
+    // Helper: Returns true if we can distribute all products such that 
+    // no store gets more than 'maxPerStore' items using available 'shops'.
+    bool checkPossibility(vector<int> &quantities, int maxPerStore, int shops) {
+        for(int products : quantities) {
+            // Calculate stores needed for this product type (ceiling division)
+            shops -= (products + maxPerStore - 1) / maxPerStore;
+            
+            if(shops < 0) return false; // Ran out of stores
+        }
+        return true;
+    }
+
+    int minimizedMaximum(int n, vector<int>& quantities) {
+        int low = 1; 
+        int high = *max_element(begin(quantities), end(quantities));
+        int result = high;
+
+        // Binary search on the possible 'minimized maximum' value
+        while(low <= high) {
+            int mid = low + (high - low) / 2;
+            
+            if(checkPossibility(quantities, mid, n)) {
+                result = mid;    // Try a smaller maximum
+                high = mid - 1;
+            } else {
+                low = mid + 1;   // Must increase the maximum per store
+            }
+        }
+        return result;
+    }
+};
