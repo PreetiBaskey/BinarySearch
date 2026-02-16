@@ -1,0 +1,101 @@
+//approach - 1 - linear search - time limit exceed
+//time complexity - O(n* range)
+//space complexity - O(1)
+// class Solution {
+// public:
+//     int getLargestSum(vector<int> &nums, int range) {
+//         int n = nums.size();
+//         int count = 1;
+//         int tempSum = 0;
+//         for(int i = 0; i < n; i++) {
+//             if(nums[i] + tempSum > range) {
+//                 count = count + 1;
+//                 tempSum = nums[i];
+//             }
+//             else {
+//                 tempSum += nums[i];
+//             }
+//         }
+
+//         return count;
+//     }
+//     int splitArray(vector<int>& nums, int k) {
+//         int n = nums.size();
+//         int totalSum = accumulate(begin(nums), end(nums), 0);
+//         int maxEle = *max_element(begin(nums), end(nums));
+
+//         for(int range = maxEle; range <= totalSum; range++) {
+//             int possible = getLargestSum(nums, range);
+//             if(possible <= k) {
+//                 return range;
+//             }
+//         }
+
+//         return totalSum;
+//     }
+// };
+
+
+
+
+
+//approach - binary search
+//time complexity - O(n)
+//space complexity - O(1)
+class Solution {
+public:
+    /**
+     * Helper function: Greedily counts how many subarrays are needed
+     * if we limit the sum of each subarray to 'maxAllowedSum'.
+     */
+    int getSubarrayCount(vector<int> &nums, int maxAllowedSum) {
+        int count = 1; // Start with at least one subarray
+        int currentRunningSum = 0;
+
+        for(int num : nums) {
+            // If adding the next number exceeds our current 'limit' (mid)
+            if(currentRunningSum + num > maxAllowedSum) {
+                // We must start a new subarray
+                count++;
+                currentRunningSum = num; // The new subarray starts with this number
+            }
+            else {
+                // Keep adding to the current subarray
+                currentRunningSum += num;
+            }
+        }
+        return count;
+    }
+
+    int splitArray(vector<int>& nums, int k) {
+        // 'low' is the smallest possible answer: the largest single element.
+        // A subarray must be at least as large as the biggest number to hold it.
+        int low = *max_element(begin(nums), end(nums));
+        
+        // 'high' is the largest possible answer: the sum of all elements.
+        // This happens if k=1 (the entire array is one subarray).
+        int high = accumulate(begin(nums), end(nums), 0);
+
+        // Binary search to find the minimum possible 'Largest Sum'
+        while(low <= high) {
+            int mid = low + (high - low) / 2;
+            
+            // Check: "If we limit subarray sums to 'mid', how many do we need?"
+            int subarraysNeeded = getSubarrayCount(nums, mid);
+
+            if(subarraysNeeded <= k) {
+                // If we used k or fewer subarrays, this 'mid' is a valid candidate.
+                // We try to find an even smaller maximum sum by searching the left half.
+                high = mid - 1;
+            }
+            else {
+                // If subarraysNeeded > k, 'mid' is too small.
+                // We must increase our limit to reduce the number of subarrays.
+                low = mid + 1;
+            }
+        }
+
+        // After the loop, 'low' will point to the smallest value that satisfied the condition.
+        return low;
+    }
+};
