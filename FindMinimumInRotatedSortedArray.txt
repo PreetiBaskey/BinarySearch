@@ -1,0 +1,32 @@
+//approach - 1
+//time complexity - O(logn)
+//space complexity - O(1)
+class Solution {
+public:
+    int findMin(vector<int>& nums) {
+         int n = nums.size();
+
+         int left = 0, right = n - 1;
+         
+         // Use (left < right) to avoid an infinite loop and 
+         // because we want 'left' and 'right' to converge on the minimum.
+         while(left < right) {
+            int mid = left + (right - left) / 2;
+
+            // If mid element is greater than the rightmost element, 
+            // the minimum must be in the right half (after mid).
+            if(nums[mid] > nums[right]) {
+                left = mid + 1;
+            }
+            // If mid element is less than or equal to the rightmost element,
+            // the minimum is either at mid or to the left of mid.
+            else {
+                right = mid;
+            }
+         }
+
+         // When left == right, we have found the smallest element.
+         return nums[right];
+    }
+};
+            
