@@ -1,0 +1,56 @@
+//approach - 1
+//time complexity - O(n)
+//space complexity - O(1)
+// class Solution {
+// public:
+//     int findKthPositive(vector<int>& arr, int k) {
+//         int n = arr.size();
+
+//         int num = 1;
+//         int i = 0;
+//         while(k > 0 && i < n) {
+//             if(arr[i] != num) {
+//                 k--;
+//             }
+//             else if(arr[i] == num) {
+//                 i++;
+//             }
+//             num++;
+//         }
+
+//         while(k--) {
+//             num++;
+//         }
+
+//         return num - 1;
+//     }
+// };
+
+
+
+
+//approach - 2
+//time complexity - O(logn)
+//space complexity - O(1)
+class Solution {
+public:
+    int findKthPositive(vector<int>& arr, int k) {
+        int n = arr.size();
+
+        int left = 0, right = n - 1;
+        int mid = -1;
+        while(left <= right) {
+            mid = left + (right - left) / 2;
+            int missingTillMid = arr[mid] - (mid + 1);
+            
+            if(missingTillMid < k) {
+                left = mid + 1;
+            }
+            else {
+                right = mid - 1;
+            }
+        }
+
+        return left + k;
+    }
+};
