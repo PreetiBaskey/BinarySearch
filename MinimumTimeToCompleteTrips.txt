@@ -1,4 +1,4 @@
-//approach - 1
+//approach - 1 - binary search on answer
 //time complexity - O(logn)
 //space complexity - O(1)
 class Solution {
