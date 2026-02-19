@@ -1,0 +1,132 @@
+//approach - 1 - brute force - time timit exceed
+//time complexity - O(m * n)
+//space complexity - O(1) or O(m)
+// class Solution {
+// public:
+//     vector<int> successfulPairs(vector<int>& spells, vector<int>& potions, long long success) {
+//         int m = spells.size();
+//         int n = potions.size();
+
+//         vector<int> result;
+//         for(int &spell: spells) {
+//             int count = 0;
+//             for(int &potion: potions) {
+//                 if((long long)spell * potion >= success) {
+//                     count++;
+//                 }
+//             }
+//             result.push_back(count);
+//         }
+
+//         return result;
+//     }
+// };
+
+
+
+
+
+//approach - 2
+//time complexity - O(nlogn + mlogn), using stl lower_bound()
+//space complexity - O(1) or O(m)
+// class Solution {
+// public:
+//     vector<int> successfulPairs(vector<int>& spells, vector<int>& potions, long long success) {
+//         int m = spells.size();
+//         int n = potions.size();
+
+//         // 1. Sort potions so we can use Binary Search to find the threshold quickly
+//         sort(begin(potions), end(potions));
+
+//         // 2. The last element is the strongest since the array is now sorted
+//         int maxPotionValue = potions[n - 1];
+
+//         vector<int> result;
+//         for(int i = 0; i < m; i++) {
+//             int spell = spells[i];
+
+//             // 3. Calculate the minimum potion strength needed to meet the 'success' target
+//             // Using 1.0 to force floating point division for the ceil function
+//             long long minPotion = ceil((1.0 * success) / spell);
+
+//             // 4. Quick check: if the required strength is more than our strongest potion, 0 pairs possible
+//             if(minPotion > maxPotionValue) {
+//                 result.push_back(0);
+//                 continue;
+//             }
+
+//             // 5. Use Binary Search (lower_bound) to find the first potion >= minPotion
+//             // This tells us the starting index of all valid potions
+//             int index = lower_bound(begin(potions), end(potions), minPotion) - begin(potions);
+            
+//             // 6. Every potion from this index to the end of the array is a 'successful pair'
+//             int count = n - index;
+
+//             result.push_back(count);
+//         }
+
+//         return result;
+//     }
+// };
+
+
+
+
+//approach - 3 - own lower bound function is used
+//time complexity - O(nlogn + mlogn)
+//space complexity - O(1) or O(m)
+class Solution {
+public:
+    int findLowerBound(vector<int> &potions, long long minPotion, int left, int right) {
+        int possibleIndex = -1;
+        while(left <= right) {
+            int mid = left + (right - left) / 2;
+
+            if(potions[mid] >= minPotion) {
+                possibleIndex = mid;
+                right = mid - 1;
+            }
+            else {
+                left = mid + 1;
+            }
+        }
+
+        return possibleIndex;
+    }
+    vector<int> successfulPairs(vector<int>& spells, vector<int>& potions, long long success) {
+        int m = spells.size();
+        int n = potions.size();
+
+        // 1. Sort potions so we can use Binary Search to find the threshold quickly
+        sort(begin(potions), end(potions));
+
+        // 2. The last element is the strongest since the array is now sorted
+        int maxPotionValue = potions[n - 1];
+
+        vector<int> result;
+        for(int i = 0; i < m; i++) {
+            int spell = spells[i];
+
+            // 3. Calculate the minimum potion strength needed to meet the 'success' target
+            // Using 1.0 to force floating point division for the ceil function
+            long long minPotion = ceil((1.0 * success) / spell);
+
+            // 4. Quick check: if the required strength is more than our strongest potion, 0 pairs possible
+            if(minPotion > maxPotionValue) {
+                result.push_back(0);
+                continue;
+            }
+
+            // 5. Use custom function - findLowerBound() to find the first potion >= minPotion
+            // This tells us the starting index of all valid potions
+            int index = findLowerBound(potions, minPotion, 0, n - 1);
+            
+            // 6. Every potion from this index to the end of the array is a 'successful pair'
+            int count = n - index;
+
+            result.push_back(count);
+        }
+
+        return result;
+    }
+};
