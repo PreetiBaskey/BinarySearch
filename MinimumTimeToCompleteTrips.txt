@@ -1,5 +1,5 @@
 //approach - 1 - binary search on answer
-//time complexity - O(logn)
+//time complexity - O(n * log(time range))
 //space complexity - O(1)
 class Solution {
 public:
