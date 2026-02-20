@@ -1,0 +1,27 @@
+//approach - 1
+//time complexity - O(logn)
+//space complexity - O(1)
+class Solution {
+public:
+    int minOperations(vector<int>& nums, int k) {
+        sort(begin(nums), end(nums));
+
+        int n = nums.size();
+    
+        int left = 0, right = n - 1;
+        int result = 0;
+        while(left <= right) {
+            int mid = left + (right - left) / 2;
+            
+            if(nums[mid] >= k) {
+                result = mid;
+                right = mid - 1;
+            }
+            else {
+                left = mid + 1;
+            }
+        }
+
+        return result;
+    }
+};
