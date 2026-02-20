@@ -1,0 +1,43 @@
+//approach - 1
+//time complexity - O(nlogn)
+//space complexity - O(1) or O(logn)
+// class Solution {
+// public:
+//     int findMin(vector<int>& nums) {
+//         sort(begin(nums), end(nums));
+
+//         return *min_element(begin(nums), end(nums));
+//     }
+// };
+
+
+
+
+//approach - 2
+//time complexity - best/average - O(logn), worse - O(n)
+//space complexity - O(1)
+class Solution {
+public:
+    int findMin(vector<int>& nums) {
+        int n = nums.size();
+
+        int left = 0, right = n - 1;
+        while(left < right) {
+            int mid = left + (right - left) / 2;
+
+            //important base
+            if(nums[left] == nums[mid] && nums[mid] == nums[right]) {
+                left++;
+                right--;
+            }
+            else if(nums[mid] > nums[right]) {
+                left = mid + 1;
+            }
+            else {
+                right = mid;
+            }
+        }
+
+        return nums[left];
+    }
+};
