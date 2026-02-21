@@ -1,0 +1,52 @@
+//approach - 1
+//time complexity - O(n)
+//space complexity - O(1)
+// class Solution {
+// public:
+//     int findPeakElement(vector<int>& nums) {
+//         int n = nums.size();
+
+//         int peak = n - 1;
+//         for(int i = 0; i < n - 1; i++) {
+//             if(nums[i] > nums[i + 1]) {
+//                 peak = i;
+//                 break;
+//             }
+//         }
+
+//         return peak;
+//     }
+// };
+
+
+
+
+//approach - 2
+//time complexity - O(logn)
+//space complexity - O(1)
+class Solution {
+public:
+    int getPeakIndex(vector<int> &nums) {
+        int left = 0, right = nums.size() - 1;
+        
+        while(left < right) {
+            int mid = left + (right - left) / 2;
+
+            // Compare mid with the NEXT element
+            if(nums[mid] < nums[mid + 1]) {
+                // We are on an upward slope, peak is to the right
+                left = mid + 1;
+            }
+            else {
+                // We are on a downward slope, mid could be the peak
+                right = mid;
+            }
+        }
+        // When left == right, we have found a peak
+        return left;
+    }
+
+    int findPeakElement(vector<int>& nums) {
+        return getPeakIndex(nums);
+    }
+};
